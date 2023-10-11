@@ -101,6 +101,8 @@ def viz(gt_traj, pred_traj, gt_latent_traj, pred_latent_traj, ti=4, reconstructi
         plot_latent_states(fig2, axs2, pred_latent_traj, gt_latent_traj, tidxs, M)
 
     plt.show()
+    # plt.savefig('./eval.png')
+    # plt.close()
 
 def plot_latent_states(fig, axs, pred_latents, gt_latents, tidxs, M):
     X = torch.arange(pred_latents.shape[1])
@@ -164,10 +166,10 @@ def plot_reconstructions(fig, axs, pred_traj, gt_traj, tidxs, M):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model_fp', type=str, required=True, help='Path to the model to eval')
-    parser.add_argument('--eval_data_fp', type=str, required=True, help='Path to the replay buffer containing data to eval')
+    parser.add_argument('--model_fp', type=str, required=False, default='../models/all_modalities/model.cpt', help='Path to the model to eval')
+    parser.add_argument('--eval_data_fp', type=str, required=False, default='/home/zhipeng/datasets/tartandrive/data/test-hard', help='Path to the replay buffer containing data to eval')
     parser.add_argument('--T', type=int, required=False, default=10, help='Number of timesteps to predict')
-    parser.add_argument('--N', type=int, required=False, default=10, help='Number of samples to eval')
+    parser.add_argument('--N', type=int, required=False, default=30, help='Number of samples to eval')
     parser.add_argument('--contrastive', type=str2bool, required=False, default=False, help='For contrastive loss, plot latents instead of reconstructions')
     parser.add_argument('--viz', type=str2bool, required=False, default=False, help='Whether to viz or compute')
 
@@ -179,11 +181,14 @@ if __name__ == '__main__':
     
     err_buf = []
 
-    for e in range(args.N):
-        tfp = np.random.choice(fps)
+    # for e in range(args.N):
+    for tfp in fps:
+        # print(tfp)
+        # tfp = np.random.choice(fps)
         traj = torch.load(os.path.join(args.eval_data_fp, tfp), map_location='cpu')
 
         tidx = np.random.randint(traj['action'].shape[0] - args.T)
+        print(tidx)
         
         gt_traj = dict_map(traj, lambda x:x[tidx:tidx+args.T])
         x0 = {k:v[[0]] for k,v in gt_traj['observation'].items()}

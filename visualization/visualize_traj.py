@@ -93,7 +93,7 @@ def plot_data(data, t, mode, fig, ax):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--traj_fp', type=str, required=True, help='The path to the <traj>.pt data file')
+    parser.add_argument('--traj_fp', type=str, required=False, default='/home/zhipeng/datasets/tartandrive/data_torch/20210826_100.pt', help='The path to the <traj>.pt data file')
     args = parser.parse_args()
 
     traj = torch.load(args.traj_fp)
@@ -101,5 +101,5 @@ if __name__ == '__main__':
     fig, axs, topics = init_plt(traj)
 
     anim = FuncAnimation(fig, func = lambda t:make_plot(traj, t=t, topics=topics, fig=fig, axs=axs), frames=np.arange(traj['action'].shape[0]), interval=0.1*1000)
-    plt.show()
-#    anim.save('video.mp4')
+    # plt.show()
+    anim.save('video.mp4')

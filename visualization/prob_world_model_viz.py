@@ -66,9 +66,11 @@ def make_plot(viz_traj, traj, preds, errors, t, T, fig, axs):
 
     for name, pred in preds.items():
         pred_rot = rotate_traj(pred[t], q0)
+        # print('pred_rot',pred_rot)
         axs[0].plot(pred_rot[:, 0], pred_rot[:, 1], label=name, linewidth=3.)
 
     gt_rot = rotate_traj(traj['next_observation']['state'][t:t+T], q0)
+    # print('gt_rot',gt_rot)
     axs[0].plot(gt_rot[:, 0], gt_rot[:, 1], label='GT', linewidth=3.)
     axs[0].legend()
     axs[0].set_xlabel('X(m)')
@@ -97,9 +99,9 @@ def make_plot(viz_traj, traj, preds, errors, t, T, fig, axs):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model_fp', type=str, nargs='+', required=True, help='Path to the model to eval')
-    parser.add_argument('--model_name', type=str, nargs='+', required=False, help='Names to call models in viz')
-    parser.add_argument('--traj_fp', type=str, required=True, help='The traj to visualize')
+    parser.add_argument('--model_fp', type=str, nargs='+', required=False, default=['../models/all_modalities/model.cpt','../models/rgb/model.cpt','../models/time_series/model.cpt'], help='Path to the model to eval')
+    parser.add_argument('--model_name', type=str, nargs='+', required=False, default=['model','rgb','time_series'], help='Names to call models in viz')
+    parser.add_argument('--traj_fp', type=str, required=False, default='/home/zhipeng/datasets/tartandrive/data/test-hard/20210910_3.pt', help='The traj to visualize')
     parser.add_argument('--viz_traj_fp', type=str, required=False, default=None, help='optional. If provided, should be the same traj as traj_fp, but with upsampled images. Use this traj to visualise instead')
     parser.add_argument('--T', type=int, required=False, default=10, help='Number of timesteps to predict')
 
@@ -110,10 +112,17 @@ if __name__ == '__main__':
 
     traj = torch.load(args.traj_fp)
     viz_traj = traj if args.viz_traj_fp is None else torch.load(args.viz_traj_fp)
+    # print("models", models)
+    # print("model_names", model_names)
+    for key in traj:
+        print(key)
+    # print(traj['observation'])
 
     preds, errors = precompute_results(traj, models, model_names, args.T)
+    # print("preds",preds)
+    print("preds.size",preds['model'].shape)
 
     fig, axs = init_plt()
     anim = FuncAnimation(fig, func = lambda t:make_plot(viz_traj, traj, preds, errors, t=t, T=args.T, fig=fig, axs=axs), frames=np.arange(traj['action'].shape[0]-args.T), interval=0.1*1000)
-    anim.save('{}_T{}.mp4'.format('_'.join(args.model_name), args.T))
+    anim.save('{}_{}_T{}.mp4'.format(os.path.splitext(os.path.basename(args.traj_fp))[0], '_'.join(args.model_name), args.T))
 #    plt.show()

@@ -1,0 +1,137 @@
+train_fp: "/home/zhipeng/datasets/tartandrive/data/train/"
+eval_fp: "/home/zhipeng/datasets/tartandrive/data/test-easy/"
+latent_model:
+  type: 'RSSM'
+  params:
+    rnn_hidden_size: 16
+    latent_size: 128
+
+modalities:
+  state:
+    topic: 	/odometry/filtered_odom
+    encoder:
+      type: GaussianMLPEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: MLPDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+
+  action:
+    topic: 	/cmd
+    encoder:
+      type: GaussianMLPEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: MLPDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+
+  image_rgb:
+    topic: /multisense/left/image_rect_color
+    encoder:
+      type: CNNEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: CNNDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+
+  rgbmap:
+    topic: 	/local_rgb_map
+    encoder:
+      type: CNNEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: CNNDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+
+  heightmap:
+    topic: 	/local_height_map
+    encoder:
+      type: CNNEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: CNNDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+
+  imu:
+    topic: 	/multisense/imu/imu_data
+    encoder:
+      type: WaveNetEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: WaveNetDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+  wheel_rpm:
+    topic: 	/wheel_rpm
+    encoder:
+      type: WaveNetEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: WaveNetDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+  shock_travel:
+    topic: 	/shock_pos
+    encoder:
+      type: WaveNetEncoder
+      params:
+        # Encoder parameters here
+    decoder:
+      type: WaveNetDecoder
+      params:
+        # Decoder parameters here
+    loss:
+      type: NoLoss
+      params:
+        # Loss parameters here
+
+
+# Add more modalities if needed
+
+lr: your_learning_rate
+trainer:
+  type: your_trainer_type
+  params:
+    # Trainer parameters here
+
+name: your_experiment_name
+experiment_fp: /path/to/experiment_folder
+save_every: your_save_interval

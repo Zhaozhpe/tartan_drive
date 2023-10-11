@@ -9,8 +9,8 @@ if __name__ == '__main__':
     Generate test/train from the paper
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_fp', type=str, required=True, help='dir containing dataset')
-    parser.add_argument('--save_to', type=str, required=True, help='dir to save to')
+    parser.add_argument('--dataset_fp', type=str, required=False, default='/home/zhipeng/datasets/tartandrive/data_torch', help='dir containing dataset')
+    parser.add_argument('--save_to', type=str, required=False, default='/home/zhipeng/datasets/tartandrive/data', help='dir to save to')
     parser.add_argument('--partition_fp', type=str, required=False, default='data_partition', help='The path to look for the dataset partition')
     args = parser.parse_args()
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     partitions = {}
     for tfp in os.listdir(args.partition_fp):
-        maybe_mkdir(os.path.join(args.save_to, tfp), force=True)
+        maybe_mkdir(os.path.join(args.save_to, os.path.splitext(tfp)[0]), force=True)
         with open(os.path.join(args.partition_fp, tfp), 'r') as fp:
             s = fp.read()
             tfps = s.split(', ')[:-1]
